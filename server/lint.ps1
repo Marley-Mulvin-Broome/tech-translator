@@ -10,7 +10,5 @@ if (-Not (Test-Path (Get-Command black -ErrorAction SilentlyContinue))) {
   exit 1
 }
 
-ruff check --fix ./*.py
-black ./*.py
-
-This PowerShell script does the same checks as the original shell script but uses PowerShell syntax and cmdlets to achieve the same functionality. Please make sure that you have PowerShell installed on your system to run this script.
+ruff check --fix ./app/**/*.py
+black ./app/**/*.py
