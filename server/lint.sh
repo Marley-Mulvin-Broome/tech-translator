@@ -11,5 +11,5 @@ if ! type black >/dev/null 2>&1; then
   exit 1
 fi
 
-ruff check --fix ./*.py
-black ./*.py
+ruff check --fix ./app/**/*.py
+black ./app/**/*.py
