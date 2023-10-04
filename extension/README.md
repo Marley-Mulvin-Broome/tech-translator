@@ -31,3 +31,22 @@ npm run build
 ```bash
 npm run watch
 ```
+
+# プロジェクト構造の説明
+
+## src/
+
+### background.js
+
+### contentScript.js
+
+Chromeのタブごとに<script>として入れられます。
+
+### components/
+
+### popup.js && popup.css
+右上にあるポップアップのJavaScriptとCSSです。
+
+## public/
+
+すべてのファイルとフォルダーがビルドされたときにすべての中身がそのままコピーされます。
