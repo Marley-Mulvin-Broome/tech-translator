@@ -1,21 +1,33 @@
-# <img src="public/icons/icon_48.png" width="45" align="left"> Extension
+# 開発環境の初期化
 
-My Chrome Extension
+## npmからパッケージをインストールします
 
-## Features
+```bash
+npm i
+```
 
-- Feature 1
-- Feature 2
+## ビルドします
 
-## Install
+```bash
+npm run build
+```
 
-[**Chrome** extension]()
+## Chromeで拡張機能のウィンドウへ移動します
 
-## Contribution
+「Manage Extensions」を選択します
 
-Suggestions and pull requests are welcomed!.
+![ext](docs/ext-window.png)
 
----
+## Chromeで「build」のフォルダーを拡張機能として追加しましょう
 
-This project was bootstrapped with [Chrome Extension CLI](https://github.com/dutiyesh/chrome-extension-cli)
+「Load unpacked extension」を選択します
 
+![Add ext](docs/add-ext.png)
+
+# 開発環境の使い方
+
+自動的に変化がChromeに反映されます
+
+```bash
+npm run watch
+```
