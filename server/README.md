@@ -1,6 +1,8 @@
 # 開発環境の初期化
 
-**Python10以上**
+## 事前準備
+
+**Python10以上**のインストールが必要です。
 
 ## serverに移動します
 
@@ -16,12 +18,14 @@ python -m venv venv
 
 ## 環境を有効にします
 
-**Mac / Linux**
+### Mac / Linux
+
 ```bash
-source ./venv/source/activate
+source ./venv/bin/activate
 ```
 
-**Windows**
+### Windows
+
 ```bash
 source ./venv/source/activate.ps1
 ```
@@ -35,5 +39,5 @@ pip install -r requirements.txt
 ## 実行
 
 ```bash
-
+uvicorn main:app --reload
 ```
