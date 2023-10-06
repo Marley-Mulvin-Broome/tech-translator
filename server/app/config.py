@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "Tech Translator"
+    app_name: str = "Omnia API - Firebase"
     api_key: str = ""
     auth_domain: str = ""
     project_id: str = ""
@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     service_account: str = "service_account.json"
 
     model_config = SettingsConfigDict(env_file=".env")
+
 
 @lru_cache()
 def get_settings():
