@@ -11,9 +11,8 @@ from app.dependencies import (
     ValidateTokenDep,
 )
 from app.models.users import UserSignupResponse, UserLoginResponse
-from app.internal.tango_actions import create_tango_chou
+from app.internal.cards_actions import card_collection_create
 from firebase_admin._auth_client import Client
-
 
 from firebase_admin import auth as firebase_auth
 
@@ -45,7 +44,8 @@ def signup(
             email=email, password=password
         )
 
-        create_tango_chou("デフォルト", user.uid, firestore)
+        card_collection_create("単語帳", user.uid, False, firestore)
+        card_collection_create("文章帳", user.uid, True, firestore)
 
         return UserSignupResponse(
             uid=user.uid,
@@ -99,12 +99,14 @@ def refresh(
 
 
 @user_router.post("/signout")
-def signout(firebase_auth=Depends(get_firestore), id_token: str = Header()):
+def signout(validate_token: ValidateTokenDep):
     """
     ログインAPI
     """
     try:
-        firebase_auth.revoke_refresh_tokens(id_token)
+        uid = validate_token["user"]["uid"]
+
+        firebase_auth.revoke_refresh_tokens(uid)
 
         return "OK"
     except HTTPError:

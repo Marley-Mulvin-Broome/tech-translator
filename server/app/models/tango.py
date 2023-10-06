@@ -1,15 +1,17 @@
 from pydantic import BaseModel
+from app.models.cardbase import CardBase
 
 
-class TangoCardModel(BaseModel):
-    uid: str
-    target_word: str
-    translation: str
-    due_timestamp: int
-    ease_factor: float
+class TangoCardModel(CardBase):
+    pronunciation: str
+    example_sentence_english: str
+    example_sentence_japanese: str
 
 
-class TangoChouModel(BaseModel):
-    uid: str
-    name: str
-    words: list[TangoCardModel]
+class CreateTangoModel(BaseModel):
+    english: str
+    japanese: str
+    pronunciation: str
+    example_sentence_english: str
+    example_sentence_japanese: str
+    url: str
