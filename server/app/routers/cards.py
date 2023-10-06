@@ -12,6 +12,8 @@ from app.internal.cards_actions import (
     card_collection_delete,
     card_collection_delete_card,
     card_collection_add_card,
+    card_collection_get_card,
+    card_collection_set_card,
     construct_tango_card,
     construct_sentence_card,
 )
@@ -84,6 +86,54 @@ def create_card_collection_with_name(
         owner_uid=uid,
         is_sentence=is_sentence,
     )
+
+
+@cards_router.get("/sentence_card_get/{card_collection_id}/{card_id}")
+def get_sentence_card(
+    card_collection_id: str,
+    card_id: str,
+    validate_token: ValidateTokenDep,
+    firestore=Depends(get_firestore),
+) -> SentenceCardModel:
+    uid = validate_token["user"]["uid"]
+
+    return card_collection_get_card(card_collection_id, card_id, uid, firestore)
+
+
+@cards_router.get("/tango_card_get/{card_collection_id}/{card_id}")
+def get_tango_card(
+    card_collection_id: str,
+    card_id: str,
+    validate_token: ValidateTokenDep,
+    firestore=Depends(get_firestore),
+) -> TangoCardModel:
+    uid = validate_token["user"]["uid"]
+
+    return card_collection_get_card(card_collection_id, card_id, uid, firestore)
+
+
+@cards_router.patch("/tango_card_set/{card_collection_id}")
+def set_tango_card(
+    card_collection_id: str,
+    new_card: TangoCardModel,
+    validate_token: ValidateTokenDep,
+    firestore=Depends(get_firestore),
+) -> TangoCardModel:
+    uid = validate_token["user"]["uid"]
+
+    return card_collection_set_card(card_collection_id, new_card, uid, firestore)
+
+
+@cards_router.patch("/sentence_card_set/{card_collection_id}")
+def set_sentence_card(
+    card_collection_id: str,
+    new_card: SentenceCardModel,
+    validate_token: ValidateTokenDep,
+    firestore=Depends(get_firestore),
+) -> SentenceCardModel:
+    uid = validate_token["user"]["uid"]
+
+    return card_collection_set_card(card_collection_id, new_card, uid, firestore)
 
 
 @cards_router.patch("/card_collection_update_field/{card_collection_id}")
@@ -174,48 +224,3 @@ def delete_card(
     card_collection_delete_card(card_collection_id, card_id, uid, firestore)
 
     return "OK"
-
-
-# @tango_router.post("/create_tango")
-# def create_tango(
-#     tango_chou_id: str,
-#     tango: TangoCardModel,
-#     validate_token: ValidateTokenDep,
-#     firestore=Depends(get_firestore),
-# ) -> JSONResponse:
-#     uid = validate_token["user"].get("uid", None)
-#
-#     try:
-#         return JSONResponse(
-#             content={
-#                 "tango_id": add_word_to_tango_chou(
-#                     tango_chou_id, tango, uid, firestore
-#                 ),
-#             }
-#         )
-#     except Exception as e:
-#         return JSONResponse(
-#             content={
-#                 "error": str(e),
-#             },
-#             status_code=400,
-#         )
-#
-#
-# @tango_router.patch("/sync_tango_chous")
-# def sync_all_tango_chous(
-#     tango_chou_list: list[TangoChouModel],
-#     validate_token: ValidateTokenDep,
-#     firestore=Depends(get_firestore),
-# ):
-#     pass
-
-
-# @tango_router.post("/")
-# def sync_tango(tango_list: list[TangoCardModel], validate_token: ValidateTokenDep, firestore = Depends(get_firestore)) -> JSONResponse:
-#     uid = validate_token["user"].get("uid", None)
-#
-#     if not uid:
-#         raise HTTPException(status_code=400, detail="ユーザーIDが存在しません")
-#
-#     user_tango_document = firestore.collection("users").document(uid).collection("tango").get()

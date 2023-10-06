@@ -12,7 +12,6 @@ from app.dependencies import (
 )
 from app.models.users import UserSignupResponse, UserLoginResponse
 from app.internal.cards_actions import card_collection_create
-from firebase_admin._auth_client import Client
 
 from firebase_admin import auth as firebase_auth
 
@@ -114,27 +113,15 @@ def signout(validate_token: ValidateTokenDep):
 
 
 @user_router.delete("/delete")
-def delete(
-    token_validation: ValidateTokenDep, firebase_auth: Client = Depends(get_firestore)
-):
+def delete(token_validation: ValidateTokenDep):
     """
     ログインAPI
     """
     try:
-        token = token_validation["token"]
+        uid = token_validation["user"]["uid"]
 
-        firebase_auth.delete_user(token["user"]["uid"])
+        firebase_auth.delete_user(uid)
 
         return "OK"
     except HTTPError:
         raise HTTPException(status_code=400, detail="ユーザー削除に失敗しました")
-
-
-@user_router.post("/ping")
-def ping(id_token: str = Header()):
-    """
-    ログインAPI
-    """
-    user = firebase_auth.verify_id_token(id_token)
-
-    return user.get("uid")
