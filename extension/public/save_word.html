@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>save_word</title>
+    <link rel="stylesheet" href="popup.css" />
+</head>
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+
+<body>
+  <div class="app">
+    <form action="process_form.php" method="post">
+      <input type="text" id="english" placeholder="単語" required>
+      <textarea id="japanese" placeholder="日本語訳" rows="5" cols="33" required></textarea>
+      <br>
+      <input type="submit" value="保存">
+    </form>
+  </div>
+</body>
+<script src="setForm.js"></script>
+</html>
