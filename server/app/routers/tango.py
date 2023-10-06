@@ -33,9 +33,9 @@ def get_tango_chou_id(
 
 @tango_router.post("/create_tango_chou")
 def create_tango_chou(
-    tango_chou_name: str,
     validate_token: ValidateTokenDep,
     firestore=Depends(get_firestore),
+    tango_chou_name: str = "無名",
 ):
     uid = validate_token["user"]["uid"]
 
