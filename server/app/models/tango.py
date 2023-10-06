@@ -12,8 +12,4 @@ class TangoCardModel(BaseModel):
 class TangoChouModel(BaseModel):
     uid: str
     name: str
-
-class TangoChouWithWordsModel(BaseModel):
-    uid: str
-    name: str
     words: list[TangoCardModel]

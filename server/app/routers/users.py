@@ -4,9 +4,15 @@
 
 from fastapi import APIRouter, HTTPException, Header, Depends
 from requests.exceptions import HTTPError
-from app.dependencies import EmailPasswordDep, FirebaseAuthDep, get_firestore
+from app.dependencies import (
+    EmailPasswordDep,
+    FirebaseAuthDep,
+    get_firestore,
+    ValidateTokenDep,
+)
 from app.models.users import UserSignupResponse, UserLoginResponse
 from app.internal.tango_actions import create_tango_chou
+from firebase_admin._auth_client import Client
 
 
 from firebase_admin import auth as firebase_auth
@@ -16,7 +22,9 @@ user_router = APIRouter(prefix="/users", tags=["users"])
 
 @user_router.post("/signup")
 def signup(
-    email_pass: EmailPasswordDep, firebase_login_auth: FirebaseAuthDep,  firestore=Depends(get_firestore)
+    email_pass: EmailPasswordDep,
+    firebase_login_auth: FirebaseAuthDep,
+    firestore=Depends(get_firestore),
 ) -> UserSignupResponse:
     """
     ユーザー登録API
@@ -25,9 +33,7 @@ def signup(
         email = email_pass["email"]
         password = email_pass["password"]
 
-        user = firebase_auth.create_user(
-            email=email, password=password
-        )
+        user = firebase_auth.create_user(email=email, password=password)
 
         firestore.collection("users").document(user.uid).set(
             {
@@ -93,7 +99,7 @@ def refresh(
 
 
 @user_router.post("/signout")
-def signout(firebase_auth = Depends(get_firestore), id_token: str = Header()):
+def signout(firebase_auth=Depends(get_firestore), id_token: str = Header()):
     """
     ログインAPI
     """
@@ -103,6 +109,23 @@ def signout(firebase_auth = Depends(get_firestore), id_token: str = Header()):
         return "OK"
     except HTTPError:
         raise HTTPException(status_code=400, detail="ログアウトに失敗しました")
+
+
+@user_router.delete("/delete")
+def delete(
+    token_validation: ValidateTokenDep, firebase_auth: Client = Depends(get_firestore)
+):
+    """
+    ログインAPI
+    """
+    try:
+        token = token_validation["token"]
+
+        firebase_auth.delete_user(token["user"]["uid"])
+
+        return "OK"
+    except HTTPError:
+        raise HTTPException(status_code=400, detail="ユーザー削除に失敗しました")
 
 
 @user_router.post("/ping")

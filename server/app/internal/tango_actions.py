@@ -1,5 +1,6 @@
-from app.models.tango import TangoCardModel, TangoChouModel, TangoChouWithWordsModel
+from app.models.tango import TangoCardModel, TangoChouModel
 from uuid import uuid4
+
 
 def create_tango_chou(tango_chou_name: str, uid: str, firestore) -> str:
     """
@@ -7,81 +8,103 @@ def create_tango_chou(tango_chou_name: str, uid: str, firestore) -> str:
     """
     tango_chou_id = str(uuid4())
 
-    firestore.collection("users").document(uid).collection("tango_chous").document(tango_chou_id).set(
+    firestore.collection("users").document(uid).collection("tango_chous").document(
+        tango_chou_id
+    ).set(
         {
-            "uid": tango_chou_id,
+            "uid": uid,
+            "id": tango_chou_id,
             "name": tango_chou_name,
+            "words": [],
         }
     )
 
     return tango_chou_id
 
-def add_word_to_tango_chou(tango_chou_id: str, tango: TangoCardModel, uid: str, firestore) -> str:
+
+def tango_chou_words_set(
+    tango_chou_id: str, tango_chou: TangoChouModel, uid: str, firestore
+):
+    """
+    単語帳を更新する
+    """
+    firestore.collection("users").document(uid).collection("tango_chous").document(
+        tango_chou_id
+    ).set(
+        {
+            "words": tango_chou.words,
+        }
+    )
+
+
+def add_word_to_tango_chou(
+    tango_chou_id: str, tango: TangoCardModel, uid: str, firestore
+) -> str:
     """
     単語帳に単語を追加する
     """
     tango_id = str(uuid4())
 
-    firestore.collection("users").document(uid).collection("tango_chous").document(tango_chou_id).collection("words").add(
-        {
-            "uid": tango_id,
-            "target_word": tango.target_word,
-            "translation": tango.translation,
-            "due_timestamp": tango.due_timestamp,
-            "ease_factor": tango.ease_factor,
-        }
-    )
+    tango_chou = get_tango_chou(tango_chou_id, uid, firestore)
+
+    tango_chou.words.append(tango)
+
+    tango_chou_words_set(tango_chou_id, tango_chou, uid, firestore)
 
     return tango_id
+
 
 def remove_word_from_tango_chou(tango_chou_id: str, tango_id: str, uid: str, firestore):
     """
     単語帳から単語を削除する
     """
-    firestore.collection("users").document(uid).collection("tango_chous").document(tango_chou_id).collection("words").document(tango_id).delete()
+    tango_chou = get_tango_chou(tango_chou_id, uid, firestore)
 
-def get_tango_chou(tango_chou_id: str, uid: str, firestore) -> TangoChouWithWordsModel:
+    tango_chou.words = [tango for tango in tango_chou.words if tango.uid != tango_id]
+
+    tango_chou_words_set(tango_chou_id, tango_chou, uid, firestore)
+
+
+def get_tango_chou(tango_chou_id: str, uid: str, firestore) -> TangoChouModel:
     """
     単語帳を取得する
     """
-    tango_chou_document = firestore.collection("users").document(uid).collection("tango_chous").document(tango_chou_id)
+    tango_chou_document = (
+        firestore.collection("users")
+        .document(uid)
+        .collection("tango_chous")
+        .document(tango_chou_id)
+    )
 
     tango_chou_dict = tango_chou_document.get().to_dict()
 
-    tangou_chou = TangoChouWithWordsModel(
+    return TangoChouModel(
         uid=tango_chou_dict["uid"],
         name=tango_chou_dict["name"],
-        words=[],
+        words=tango_chou_dict["words"],
     )
 
-    for tango in tango_chou_document.collection("words").stream():
-        as_dict = tango.to_dict()
-
-        tangou_chou.words.append(TangoCardModel(
-            uid=as_dict["uid"],
-            target_word=as_dict["target_word"],
-            translation=as_dict["translation"],
-            due_timestamp=as_dict["due_timestamp"],
-            ease_factor=as_dict["ease_factor"],
-        ))
-
-    return tango_chou_document
 
 def get_all_tango_chou(uid: str, firestore) -> list[TangoChouModel]:
     """
     全ての単語帳を取得する
     """
-    user_tango_document = firestore.collection("users").document(uid).collection("tango_chous").stream()
+    user_tango_document = (
+        firestore.collection("users").document(uid).collection("tango_chous").stream()
+    )
 
     tango_chous: list[TangoChouModel] = []
 
     for tango_chou in user_tango_document:
         as_dict = tango_chou.to_dict()
 
-        tango_chous.append(TangoChouModel(
-            uid=as_dict["uid"],
-            name=as_dict["name"],
-        ))
+        tango_chous.append(
+            TangoChouModel(
+                uid=as_dict["uid"],
+                name=as_dict["name"],
+                words=as_dict["words"],
+            )
+        )
 
     return tango_chous
 
@@ -99,4 +122,3 @@ def merge_tango(old_db: list[TangoCardModel], recent_db: list[TangoCardModel]):
             tango.ease_factor = old_db_dict[tango.target_word].ease_factor
 
     return recent_db
-
