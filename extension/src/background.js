@@ -7,26 +7,21 @@
 chrome.runtime.onInstalled.addListener(function(){
   chrome.contextMenus.create({
     id: "saveWord",
-    title: "レジギガガガガガガガ",
+    title: "単語を記録",
     contexts: ["selection"],
   });
 });
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
+  console.log(tab);
   if (info.menuItemId === "saveWord") {
     let word = info.selectionText;  // 選択文字列を取得する
     chrome.windows.create({
-      url: "save_word.html?english=" + encodeURIComponent(word),
+      url: "save_word.html?english=" + encodeURIComponent(word) + "&url=" + tab.url,
       type: "popup",
       width: 400,
       height: 300, 
       left: 500,
       top: 300
-    },  function(popupWindow) {
-      popupWindow.tabs[0].addEventListener("load", function() {
-        chrome.tabs.executeScript(popupWindow.tabs[0].id, {
-          code: 'document.getElementById("english").value = ' + word + ';'
-        });
-      });
     });
   }
 });

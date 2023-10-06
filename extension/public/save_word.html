@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <title>save_word</title>
@@ -10,10 +10,17 @@
 <body>
   <div class="app">
     <form action="process_form.php" method="post">
-      <input type="text" id="english" placeholder="単語" required>
+      <textarea id="english" placeholder="英語" rows="5" cols="33" required></textarea>
       <textarea id="japanese" placeholder="日本語訳" rows="5" cols="33" required></textarea>
       <br>
-      <input type="submit" value="保存">
+      <br>
+      <input type="submit" value="単語を保存">
+    </form>
+    <br>
+    <form action="process_form.php" method="post">
+      <input type="hidden" id="url">
+      <br>
+      <input type="submit" value="このページのURLを保存">
     </form>
   </div>
 </body>
