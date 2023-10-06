@@ -12,6 +12,7 @@ from app.dependencies import (
 )
 from app.models.users import UserSignupResponse, UserLoginResponse
 from app.internal.cards_actions import card_collection_create
+from app.internal.login import login_email_pass
 
 from firebase_admin import auth as firebase_auth
 
@@ -21,7 +22,7 @@ user_router = APIRouter(prefix="/users", tags=["users"])
 @user_router.post("/signup")
 def signup(
     email_pass: EmailPasswordDep,
-    firebase_login_auth: FirebaseAuthDep,
+    pyrebase_login_auth: FirebaseAuthDep,
     firestore=Depends(get_firestore),
 ) -> UserSignupResponse:
     """
@@ -39,8 +40,8 @@ def signup(
             }
         )
 
-        user_login = firebase_login_auth.sign_in_with_email_and_password(
-            email=email, password=password
+        user_token, user_refresh_token = login_email_pass(
+            pyrebase_login_auth, email, password
         )
 
         card_collection_create("単語帳", user.uid, False, firestore)
@@ -49,33 +50,29 @@ def signup(
         return UserSignupResponse(
             uid=user.uid,
             email=user.email,
-            token=user_login["idToken"],
-            refresh_token=user_login["refreshToken"],
+            token=user_token,
+            refresh_token=user_refresh_token,
         )
 
     except firebase_auth.EmailAlreadyExistsError:
         raise HTTPException(status_code=409, detail="メールアドレスが既に登録されています")
     except ValueError:
         raise HTTPException(status_code=400, detail="メールアドレスまたはパスワードが不正です")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="ユーザー登録に失敗しました\n" + str(e))
 
 
 @user_router.post("/login")
 def login(
-    email_pass: EmailPasswordDep, firebase_login_auth: FirebaseAuthDep
+    email_pass: EmailPasswordDep, pyrebase_login_auth: FirebaseAuthDep
 ) -> UserLoginResponse:
     """
     ログインAPI
     """
     try:
-        user = firebase_login_auth.sign_in_with_email_and_password(
-            email=email_pass["email"], password=email_pass["password"]
+        token, refresh_token = login_email_pass(
+            pyrebase_login_auth, email_pass["email"], email_pass["password"]
         )
 
-        return UserLoginResponse(
-            token=user["idToken"], refresh_token=user["refreshToken"]
-        )
+        return UserLoginResponse(token=token, refresh_token=refresh_token)
     except HTTPError:
         raise HTTPException(status_code=400, detail="ログインに失敗しました")
 
@@ -125,3 +122,8 @@ def delete(token_validation: ValidateTokenDep):
         return "OK"
     except HTTPError:
         raise HTTPException(status_code=400, detail="ユーザー削除に失敗しました")
+
+
+@user_router.get("/ping")
+def ping(token_validation: ValidateTokenDep):
+    return "OK"
