@@ -7,7 +7,7 @@ const RightContent: React.FC = () => {
   return (
     <Paper elevation={3} style={{ padding: '20px', height: '100%' }}>
       <RightTranslateContent />
-      <hr /> {/* 横線で分割 */}
+      <hr /> 
       <RightQuiz />
     </Paper>
   );
