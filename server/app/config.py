@@ -2,6 +2,8 @@ from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from os import environ
+
 
 class Settings(BaseSettings):
     app_name: str = "Omnia API - Firebase"

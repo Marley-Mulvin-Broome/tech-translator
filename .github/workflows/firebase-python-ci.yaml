@@ -65,9 +65,9 @@ jobs:
             MEASUREMENT_ID: ${{ secrets.MEASUREMENT_ID }}
             MESSAGING_SENDER_ID: ${{ secrets.MESSAGING_SENDER_ID }}
             PROJECT_ID: ${{ secrets.PROJECT_ID }}
-            SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
             STORAGE_BUCKET: ${{ secrets.STORAGE_BUCKET }}
           run: |
+            echo "${{ secrets.SERVICE_ACCOUNT}}" > service_account.json
             firebase emulators:exec './test.sh' --token "${FIREBASE_TOKEN}"
         
             
