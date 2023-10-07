@@ -16,7 +16,13 @@ def override_validate_token(x_uid: str = Header()) -> dict:
 
     user = auth.get_user(x_uid)
 
-    return {"token": "fake token", "user": user}
+    return {
+        "token": "fake token",
+        "user": {
+            "uid": user.uid,
+            "email": user.email,
+        },
+    }
 
 
 @pytest.fixture(scope="session", autouse=True)

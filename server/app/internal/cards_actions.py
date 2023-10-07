@@ -2,6 +2,8 @@ from app.models.tango import TangoCardModel, CreateTangoModel
 from app.models.cardbase import CardContainer, CardBase
 from app.models.sentence import CreateSentenceModel, SentenceCardModel
 from uuid import uuid4
+from app.internal.util import get_current_timestamp
+from fastapi import HTTPException
 
 COLLECTION_CONTAINER_NAME = "collection_containers"
 
@@ -135,6 +137,12 @@ def card_collection_get(collection_id: str, uid: str, firestore) -> CardContaine
 
     container_dict = collection_document.get().to_dict()
 
+    if container_dict is None:
+        raise HTTPException(
+            status_code=404,
+            detail="指定された単語帳は存在しません",
+        )
+
     return CardContainer(
         container_id=container_dict["container_id"],
         owner_uid=container_dict["owner_uid"],
@@ -195,17 +203,25 @@ def card_collection_get_card(collection_id: str, card_id: str, uid: str, firesto
             card_id=card_dict["card_id"],
             english=card_dict["english"],
             japanese=card_dict["japanese"],
-            meta_data=card_dict["meta_data"],
             explanation=card_dict["explanation"],
+            url=card_dict["url"],
+            due_timestamp=card_dict["due_timestamp"],
+            known=card_dict["known"],
+            created_timestamp=card_dict["created_timestamp"],
+            miss_count=card_dict["miss_count"],
         )
     else:
         return TangoCardModel(
             card_id=card_dict["card_id"],
             english=card_dict["english"],
             japanese=card_dict["japanese"],
-            meta_data=card_dict["meta_data"],
             pronunciation=card_dict["pronunciation"],
             example_sentence=card_dict["example_sentence"],
+            url=card_dict["url"],
+            due_timestamp=card_dict["due_timestamp"],
+            known=card_dict["known"],
+            created_timestamp=card_dict["created_timestamp"],
+            miss_count=card_dict["miss_count"],
         )
 
 
@@ -232,11 +248,14 @@ def construct_tango_card(tango_card_create_model: CreateTangoModel) -> TangoCard
         card_id=str(uuid4()),
         english=tango_card_create_model.english,
         japanese=tango_card_create_model.japanese,
-        meta_data=TangoCardModel.construct_meta_data(),
         pronunciation=tango_card_create_model.pronunciation,
         example_sentence_english=tango_card_create_model.example_sentence_english,
         example_sentence_japanese=tango_card_create_model.example_sentence_japanese,
         url=tango_card_create_model.url,
+        due_timestamp=get_current_timestamp(),
+        known=False,
+        created_timestamp=get_current_timestamp(),
+        miss_count=0,
     )
 
 
@@ -250,9 +269,12 @@ def construct_sentence_card(
         card_id=str(uuid4()),
         english=sentence_card_create_model.english,
         japanese=sentence_card_create_model.japanese,
-        meta_data=SentenceCardModel.construct_meta_data(),
         explanation=sentence_card_create_model.explanation,
         url=sentence_card_create_model.url,
+        due_timestamp=get_current_timestamp(),
+        known=False,
+        created_timestamp=get_current_timestamp(),
+        miss_count=0,
     )
 
 

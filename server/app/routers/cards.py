@@ -1,5 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
-from app.models.cardbase import CardContainer, CardContainerCreatedResponse
+from fastapi import APIRouter, Depends
+from app.models.cardbase import (
+    CardContainer,
+    CardContainerCreatedResponse,
+    CardContainerList,
+)
 from app.models.tango import CreateTangoModel, TangoCardModel
 from app.models.sentence import CreateSentenceModel, SentenceCardModel
 from app.dependencies import ValidateTokenDep, get_firestore
@@ -51,10 +55,12 @@ cards_router = APIRouter(prefix="/cards", tags=["cards"])
 @cards_router.get("/")
 def get_all_card_collections(
     validated_token: ValidateTokenDep, firestore=Depends(get_firestore)
-) -> list[CardContainer]:
-    uid = validated_token["user"].get("uid", None)
+) -> CardContainerList:
+    uid = validated_token["user"]["uid"]
 
-    return card_collections_fetch_all(uid, firestore)
+    return CardContainerList(
+        containers=card_collections_fetch_all(uid, firestore),
+    )
 
 
 @cards_router.get("/{card_collection_id}")
