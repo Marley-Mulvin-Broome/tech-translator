@@ -1,6 +1,6 @@
 #!/bin/bash
 
 source ./environ_emulator.sh
-pytest
+pytest --cov=app  --cov-branch --cov-fail-under=80 "$@"
 
 exit $?

@@ -9,6 +9,7 @@ from app.dependencies import (
     FirebaseAuthDep,
     get_firestore,
     ValidateTokenDep,
+    validate_token,
 )
 from app.models.users import UserSignupResponse, UserLoginResponse
 from app.internal.cards_actions import card_collection_create
@@ -95,12 +96,12 @@ def refresh(
 
 
 @user_router.post("/signout")
-def signout(validate_token: ValidateTokenDep):
+def signout(valid_token: ValidateTokenDep):
     """
     ログインAPI
     """
     try:
-        uid = validate_token["user"]["uid"]
+        uid = valid_token["user"]["uid"]
 
         firebase_auth.revoke_refresh_tokens(uid)
 
@@ -110,12 +111,12 @@ def signout(validate_token: ValidateTokenDep):
 
 
 @user_router.delete("/delete")
-def delete(token_validation: ValidateTokenDep):
+def delete(valid_token: ValidateTokenDep):
     """
     ログインAPI
     """
     try:
-        uid = token_validation["user"]["uid"]
+        uid = valid_token["user"]["uid"]
 
         firebase_auth.delete_user(uid)
 
@@ -124,6 +125,6 @@ def delete(token_validation: ValidateTokenDep):
         raise HTTPException(status_code=400, detail="ユーザー削除に失敗しました")
 
 
-@user_router.get("/ping")
-def ping(token_validation: ValidateTokenDep):
+@user_router.get("/ping", dependencies=[Depends(validate_token)])
+def ping():
     return "OK"

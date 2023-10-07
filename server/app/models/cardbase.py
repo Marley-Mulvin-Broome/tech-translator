@@ -10,6 +10,7 @@ class CardBase(BaseModel):
     known: bool
     created_timestamp: int
     miss_count: int
+    is_sentence: bool
 
 
 class CardContainer(BaseModel):

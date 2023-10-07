@@ -4,6 +4,7 @@ from app.models.sentence import CreateSentenceModel, SentenceCardModel
 from uuid import uuid4
 from app.internal.util import get_current_timestamp
 from fastapi import HTTPException
+from google.api_core.exceptions import NotFound
 
 COLLECTION_CONTAINER_NAME = "collection_containers"
 
@@ -156,9 +157,20 @@ def card_collection_add_card(collection_id: str, card: CardBase, uid: str, fires
     単語帳に単語を追加する
     """
 
-    firestore.collection("users").document(uid).collection(
-        COLLECTION_CONTAINER_NAME
-    ).document(collection_id).collection("cards").document(card.card_id).set(
+    collection_ref = (
+        firestore.collection("users")
+        .document(uid)
+        .collection(COLLECTION_CONTAINER_NAME)
+        .document(collection_id)
+    )
+
+    if not collection_ref.get().exists:
+        raise HTTPException(
+            status_code=404,
+            detail="指定された単語帳は存在しません",
+        )
+
+    collection_ref.collection("cards").document(card.card_id).set(
         card.model_dump(mode="json")
     )
 
@@ -198,7 +210,15 @@ def card_collection_get_card(collection_id: str, card_id: str, uid: str, firesto
 
     card_dict = card_document.get().to_dict()
 
-    if card_dict["is_sentence"]:
+    if card_dict is None:
+        raise HTTPException(
+            status_code=404,
+            detail="指定された単語か単語帳は存在しません",
+        )
+
+    is_sentence = bool(card_dict.get("is_sentence", False))
+
+    if is_sentence:
         return SentenceCardModel(
             card_id=card_dict["card_id"],
             english=card_dict["english"],
@@ -208,7 +228,8 @@ def card_collection_get_card(collection_id: str, card_id: str, uid: str, firesto
             due_timestamp=card_dict["due_timestamp"],
             known=card_dict["known"],
             created_timestamp=card_dict["created_timestamp"],
-            miss_count=card_dict["miss_count"],
+            miss_count=int(card_dict["miss_count"]),
+            is_sentence=True,
         )
     else:
         return TangoCardModel(
@@ -216,12 +237,14 @@ def card_collection_get_card(collection_id: str, card_id: str, uid: str, firesto
             english=card_dict["english"],
             japanese=card_dict["japanese"],
             pronunciation=card_dict["pronunciation"],
-            example_sentence=card_dict["example_sentence"],
+            example_sentence_english=card_dict["example_sentence_english"],
+            example_sentence_japanese=card_dict["example_sentence_japanese"],
             url=card_dict["url"],
             due_timestamp=card_dict["due_timestamp"],
             known=card_dict["known"],
             created_timestamp=card_dict["created_timestamp"],
-            miss_count=card_dict["miss_count"],
+            miss_count=int(card_dict["miss_count"]),
+            is_sentence=False,
         )
 
 
@@ -231,13 +254,19 @@ def card_set_field(
     """
     単語帳のフィールドを更新する
     """
-    firestore.collection("users").document(uid).collection(
-        COLLECTION_CONTAINER_NAME
-    ).document(collection_id).collection("cards").document(card_id).update(
-        {
-            field_name: field_value,
-        }
-    )
+    try:
+        firestore.collection("users").document(uid).collection(
+            COLLECTION_CONTAINER_NAME
+        ).document(collection_id).collection("cards").document(card_id).update(
+            {
+                field_name: field_value,
+            }
+        )
+    except NotFound:
+        raise HTTPException(
+            status_code=404,
+            detail="指定された単語か単語帳は存在しません",
+        )
 
 
 def construct_tango_card(tango_card_create_model: CreateTangoModel) -> TangoCardModel:
@@ -256,6 +285,7 @@ def construct_tango_card(tango_card_create_model: CreateTangoModel) -> TangoCard
         known=False,
         created_timestamp=get_current_timestamp(),
         miss_count=0,
+        is_sentence=False,
     )
 
 
@@ -275,6 +305,7 @@ def construct_sentence_card(
         known=False,
         created_timestamp=get_current_timestamp(),
         miss_count=0,
+        is_sentence=True,
     )
 
 
