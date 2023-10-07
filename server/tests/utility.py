@@ -11,6 +11,7 @@ from httpx import Response
 from app.models.tango import TangoCardModel, CreateTangoModel
 from app.models.sentence import CreateSentenceModel, SentenceCardModel
 from app.models.speak import SpeakRequest
+from app.models.rss import RssFetchRequest
 
 
 def make_authenticated_request(
@@ -198,4 +199,16 @@ def speak_text_request(
         uid,
         "post",
         json=speak_request.model_dump(mode="json"),
+    )
+
+
+def get_rss_request(
+    test_client: TestClient, uid: str, rss_fetch_request: RssFetchRequest
+) -> Response:
+    return make_authenticated_request(
+        test_client,
+        "/rss",
+        uid,
+        "post",
+        json=rss_fetch_request.model_dump(mode="json"),
     )
