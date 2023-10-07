@@ -10,8 +10,6 @@ from tests.utility import (
     get_sentence_card_request,
     add_sentence_card_to_collection_request,
     add_tango_card_to_collection_request,
-    set_tango_card_request,
-    set_sentence_card_request,
     delete_card_collection_request,
     update_card_field_request,
     update_card_collection_field_request,
@@ -28,21 +26,6 @@ from app.models.tango import TangoCardModel, CreateTangoModel
 from app.models.sentence import SentenceCardModel, CreateSentenceModel
 
 from time import time
-
-
-@pytest.fixture(scope="function")
-def user_uid(test_client):
-    response = signup_request(
-        test_client,
-        "potato@potato.com",
-        "password123",
-    )
-
-    assert response.status_code == 200
-
-    yield response.json()["uid"]
-
-    delete_user_request(test_client, response.json()["uid"])
 
 
 @pytest.fixture(scope="function")

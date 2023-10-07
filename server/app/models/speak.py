@@ -1,4 +1,5 @@
-# from pydantic import BaseModel
+from pydantic import BaseModel
+
 # from enum import Enum
 #
 #
@@ -10,3 +11,7 @@
 # class SpeakRequest(BaseModel):
 #     text: str
 #     voice: Voice
+
+
+class SpeakRequest(BaseModel):
+    text: str
