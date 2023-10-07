@@ -1,7 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.models.cardbase import CardContainer, CardContainerCreatedResponse
+from app.models.cardbase import (
+    CardContainer,
+    CardContainerCreatedResponse,
+    CardContainerList,
+)
 from app.models.tango import CreateTangoModel, TangoCardModel
 from app.models.sentence import CreateSentenceModel, SentenceCardModel
+from app.models.shared import OkResponse
 from app.dependencies import ValidateTokenDep, get_firestore
 from app.internal.cards_actions import (
     card_collections_fetch_all,
@@ -27,7 +32,6 @@ class SettableCardContainerFields(str, Enum):
 
 class SettableCardFields(str, Enum):
     name = "name"
-    is_sentence = "is_sentence"
     english = "english"
     japanese = "japanese"
     pronunciation = "pronunciation"
@@ -36,13 +40,37 @@ class SettableCardFields(str, Enum):
     explanation = "explanation"
     url = "url"
     known = "known"
-
-
-class SettableCardMetaData(str, Enum):
     due_timestamp = "due_timestamp"
-    ease_factor = "ease_factor"
     miss_count = "miss_count"
-    url = "url"
+
+    @staticmethod
+    def validate(field_name: str, field_value: str) -> bool:
+        if field_name not in SettableCardFields.__members__:
+            raise HTTPException(
+                status_code=400,
+                detail=f"{field_name}は更新できないフィールドです",
+            )
+
+        if field_name in ["miss_count", "due_timestamp"]:
+            try:
+                int(field_value)
+                return True
+            except ValueError:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"{field_name}は整数である必要があります",
+                )
+        elif field_name == "known":
+            try:
+                bool(field_value)
+                return True
+            except ValueError:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"{field_name}は真偽値である必要があります",
+                )
+
+        return True
 
 
 cards_router = APIRouter(prefix="/cards", tags=["cards"])
@@ -51,10 +79,12 @@ cards_router = APIRouter(prefix="/cards", tags=["cards"])
 @cards_router.get("/")
 def get_all_card_collections(
     validated_token: ValidateTokenDep, firestore=Depends(get_firestore)
-) -> list[CardContainer]:
-    uid = validated_token["user"].get("uid", None)
+) -> CardContainerList:
+    uid = validated_token["user"]["uid"]
 
-    return card_collections_fetch_all(uid, firestore)
+    return CardContainerList(
+        containers=card_collections_fetch_all(uid, firestore),
+    )
 
 
 @cards_router.get("/{card_collection_id}")
@@ -106,7 +136,7 @@ def get_tango_card(
     card_id: str,
     validate_token: ValidateTokenDep,
     firestore=Depends(get_firestore),
-) -> TangoCardModel:
+) -> TangoCardModel | SentenceCardModel:
     uid = validate_token["user"]["uid"]
 
     return card_collection_get_card(card_collection_id, card_id, uid, firestore)
@@ -143,14 +173,14 @@ def update_card_collection_field(
     field_value: str,
     validate_token: ValidateTokenDep,
     firestore=Depends(get_firestore),
-) -> str:
+) -> OkResponse:
     uid = validate_token["user"]["uid"]
 
     card_collection_set_field(
         card_collection_id, field_name, field_value, uid, firestore
     )
 
-    return "OK"
+    return OkResponse()
 
 
 @cards_router.patch("/card_update_field/{card_collection_id}/{card_id}")
@@ -161,12 +191,14 @@ def update_card_field(
     field_value: str,
     validate_token: ValidateTokenDep,
     firestore=Depends(get_firestore),
-) -> str:
+) -> OkResponse:
     uid = validate_token["user"]["uid"]
+
+    SettableCardFields.validate(field_name, field_value)
 
     card_set_field(card_collection_id, card_id, field_name, field_value, uid, firestore)
 
-    return "OK"
+    return OkResponse()
 
 
 @cards_router.post("/add_tango_card_to_collection/{card_collection_id}")
@@ -204,12 +236,12 @@ def delete_card_collection(
     card_collection_id: str,
     validate_token: ValidateTokenDep,
     firestore=Depends(get_firestore),
-) -> str:
+) -> OkResponse:
     uid = validate_token["user"].get("uid", None)
 
     card_collection_delete(card_collection_id, uid, firestore)
 
-    return "OK"
+    return OkResponse()
 
 
 @cards_router.delete("/delete_card/{card_collection_id}/{card_id}")
@@ -218,9 +250,9 @@ def delete_card(
     card_id: str,
     validate_token: ValidateTokenDep,
     firestore=Depends(get_firestore),
-) -> str:
+) -> OkResponse:
     uid = validate_token["user"].get("uid", None)
 
     card_collection_delete_card(card_collection_id, card_id, uid, firestore)
 
-    return "OK"
+    return OkResponse()
