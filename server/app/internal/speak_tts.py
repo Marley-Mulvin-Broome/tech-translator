@@ -1,12 +1,9 @@
-# TTS_MODEL_NAME = "tts_models/multilingual/multi-dataset/your_tts"
+from gtts import gTTS
+from app.internal.util import generate_random_file_name
 
 
-# def init_tts():
-#     from torch.cuda import is_available
-#     from TTS.api import TTS
+def generate_tts_to_file(text: str, file_name: str) -> str:
+    tts = gTTS(text=text, lang="en")
+    tts.save(file_name)
 
-#     device = "cuda" if is_available() else "cpu"
-
-#     tts = TTS(model_name=TTS_MODEL_NAME, progress_bar=False).to(device)
-
-#     return tts
+    return file_name

@@ -10,6 +10,7 @@ from httpx import Response
 
 from app.models.tango import TangoCardModel, CreateTangoModel
 from app.models.sentence import CreateSentenceModel, SentenceCardModel
+from app.models.speak import SpeakRequest
 
 
 def make_authenticated_request(
@@ -185,4 +186,16 @@ def delete_card_request(
         f"/cards/delete_card/{collection_id}/{card_id}",
         uid,
         "delete",
+    )
+
+
+def speak_text_request(
+    test_client: TestClient, uid: str, speak_request: SpeakRequest
+) -> Response:
+    return make_authenticated_request(
+        test_client,
+        "/speak",
+        uid,
+        "post",
+        json=speak_request.model_dump(mode="json"),
     )
