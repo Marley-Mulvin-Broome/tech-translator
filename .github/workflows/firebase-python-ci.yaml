@@ -2,7 +2,7 @@ name: Python lint and test
 
 on:
   push:
-    branches: [master, dev]
+    branches: [master, dev, firebase-emulator]
     paths: [".github/workflow/firebase-python-ci.yaml", "server/**"]
 
 jobs:
