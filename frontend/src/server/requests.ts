@@ -148,8 +148,12 @@ export const getAllCardsInCollectionRequest = async<T extends TangoCard[] | Sent
   return makeAuthenticatedRequest(`cards/${collectionId}/cards`, token, {}, undefined, undefined, 'GET') as Promise<T>;
 }
 
-export const createCardCollectionWithNameRequest = async (token: string, name: string) => {
-  return makeAuthenticatedRequest('cards/create_card_collection', token, {}, undefined, { name }, 'POST') as Promise<CardContainerCreatedResponse>;
+export const createCardCollectionWithNameRequest = async (token: string, name: string, is_sentence = false) => {
+  const queryParams = new URLSearchParams();
+  queryParams.set('name', name);
+  queryParams.set('is_sentence', is_sentence.toString());
+
+  return makeAuthenticatedRequest('cards/create_card_collection', token, {}, queryParams, undefined, 'POST') as Promise<CardContainerCreatedResponse>;
 };
 
 export const getSentenceCardRequest = async (token: string, collectionId: string, cardId: string) => {
