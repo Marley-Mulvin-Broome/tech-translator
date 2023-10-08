@@ -20,6 +20,7 @@ from app.internal.cards_actions import (
     card_collection_get_card,
     card_collection_set_card,
     card_collection_get_all_cards,
+    card_collection_get_all_todo_cards_count,
     construct_tango_card,
     construct_sentence_card,
 )
@@ -110,6 +111,17 @@ def get_all_cards_in_collection_with_id(
     return card_collection_get_all_cards(card_collection_id, uid, firestore)
 
 
+@cards_router.get("/{card_collection_id}/todo_count")
+def get_all_todo_cards_count_in_collection_with_id(
+    card_collection_id: str,
+    validate_token: ValidateTokenDep,
+    firestore=Depends(get_firestore),
+) -> int:
+    uid = validate_token["user"].get("uid", None)
+
+    return card_collection_get_all_todo_cards_count(card_collection_id, uid, firestore)
+
+
 @cards_router.post("/create_card_collection")
 def create_card_collection_with_name(
     collection_name: str,
@@ -160,10 +172,12 @@ def set_tango_card(
     new_card: TangoCardModel,
     validate_token: ValidateTokenDep,
     firestore=Depends(get_firestore),
-) -> TangoCardModel:
+) -> OkResponse:
     uid = validate_token["user"]["uid"]
 
-    return card_collection_set_card(card_collection_id, new_card, uid, firestore)
+    card_collection_set_card(card_collection_id, new_card, uid, firestore)
+
+    return OkResponse()
 
 
 @cards_router.patch("/sentence_card_set/{card_collection_id}")
@@ -172,10 +186,12 @@ def set_sentence_card(
     new_card: SentenceCardModel,
     validate_token: ValidateTokenDep,
     firestore=Depends(get_firestore),
-) -> SentenceCardModel:
+) -> OkResponse:
     uid = validate_token["user"]["uid"]
 
-    return card_collection_set_card(card_collection_id, new_card, uid, firestore)
+    card_collection_set_card(card_collection_id, new_card, uid, firestore)
+
+    return OkResponse()
 
 
 @cards_router.patch("/card_collection_update_field/{card_collection_id}")
