@@ -90,3 +90,6 @@ code {
     border: .5px dashed #000;
     opacity: .1;
 }
+textarea {
+    resize: none;
+}

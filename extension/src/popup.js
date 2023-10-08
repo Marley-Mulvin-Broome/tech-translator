@@ -32,6 +32,7 @@ import './popup.css';
     document.getElementById('counter').innerHTML = initialValue;
 
     document.getElementById('incrementBtn').addEventListener('click', () => {
+      document.getElementById('word').innerHTML = window.getSelection().toString();
       updateCounter({
         type: 'INCREMENT',
       });
@@ -80,7 +81,18 @@ import './popup.css';
       });
     });
   }
-
+  function createPopupWindow() {
+    chrome.windows.create({
+        url: "popup.html",
+        type: "popup",
+        width: 400,
+        height: 300, 
+        left: 100,
+        top: 100
+    });
+    console.log("xx");
+  }
+  chrome.runtime.onStartup.addListener(createPopupWindow);
   function restoreCounter() {
     // Restore count value
     counterStorage.get(count => {
@@ -96,7 +108,7 @@ import './popup.css';
   }
 
   document.addEventListener('DOMContentLoaded', restoreCounter);
-
+  
   // Communicate with background file by sending a message
   chrome.runtime.sendMessage(
     {
