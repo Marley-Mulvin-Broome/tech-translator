@@ -1,7 +1,6 @@
 {
   "manifest_version": 3,
   "name": "Extension",
-  "$schema": "https://json.schemastore.org/chrome-manifest.json",
   "version": "0.1.0",
   "description": "My Chrome Extension",
   "icons": {
@@ -22,6 +21,16 @@
     "activeTab",
     "tabs",
     "contextMenus"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "wordTranslator.html"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
   ],
   "content_scripts": [
     {

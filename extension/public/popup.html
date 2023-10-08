@@ -4,30 +4,59 @@
     <meta charset="UTF-8">
     <title>My Chrome Extension</title>
     <link rel="stylesheet" href="popup.css" />
+    <link rel="stylesheet" href="reset.css" />
+    <style>
+      *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}:where([hidden]:not([hidden='until-found'])){display:none!important}:where(html){-webkit-text-size-adjust:none;color-scheme:dark light}@media (prefers-reduced-motion:no-preference){:where(html:focus-within){scroll-behavior:smooth}}:where(body){line-height:1.5;font-family:system-ui,sans-serif;-webkit-font-smoothing:antialiased}:where(input,button,textarea,select){font:inherit;color:inherit}:where(textarea){resize:vertical;resize:block}:where(button,label,select,summary,[role='button'],[role='option']){cursor:pointer}:where(:disabled){cursor:not-allowed}:where(label:has(>input:disabled),label:has(+input:disabled)){cursor:not-allowed}:where(button){border-style:solid}:where(a){color:inherit;text-underline-offset:.2ex}:where(ul,ol){list-style:none}:where(img,svg,video,canvas,audio,iframe,embed,object){display:block}:where(img,picture,svg){max-inline-size:100%;block-size:auto}:where(p,h1,h2,h3,h4,h5,h6){overflow-wrap:break-word}:where(h1,h2,h3){line-height:calc(1em + 0.5rem)}:where(hr){border:none;border-block-start:1px solid;color:inherit;block-size:0;overflow:visible}:where(:focus-visible){outline:3px solid Highlight;outline-offset:2px;scroll-margin-block:10vh}:where(.visually-hidden:not(:focus-within,:active)){clip-path:inset(50%)!important;height:1px!important;width:1px!important;overflow:hidden!important;position:absolute!important;white-space:nowrap!important;border:0!important}
+    </style>
 </head>
 <body>
   <div class="app">
-    <p class="counter-label">Counter</p>
-    <div id="counter" class="counter"></div>
-    <div id="word" class="word"></div>
-    <div class="button-container">
-      <button id="decrementBtn" class="button">-</button>
-      <button id="incrementBtn" class="button">+</button>
+    <header class="app-header">
+      <h1>
+        Welcome 👋
+      </h1>
+    </header>
+
+    <main class="app-body">
+      <div class="tango-cards">
+        <h2>残り200の単語カード</h2>
+  
+        <div class="pie pie-animate" style="--p:60;--b:10px;--c:var(--rose-500);">
+          30
+        </div>
+  
+        <button class="btn-benkyou">
+          勉強する
+        </button>
+      </div>
+  
+      <div class="stats">
+        <h2>あなたの進歩</h2>
+  
+        <div class="stat-container-list">
+          <div class="stat-container">
+            <div class="stat-container__number">
+              3
+            </div>
+            <div class="stat-container__text">
+              日連続
+            </div>
+          </div>
+    
+          <div class="stat-container">
+            <div class="stat-container__number">
+              200
+            </div>
+            <div class="stat-container__text">
+              単語を学びました
+            </div>
+          </div>
+        </div>
+        
+      </div>
     </div>
+    </main>
 
-    <hr class="divider" />
-
-    <p class="title">Chrome Extension is Ready!</p>
-    <p class="subtitle">Start by updating <code>popup.html</code></p>
-  </div>
-
-  <script src="popup.js"></script>
-
-  <!--
-    This HTML file opens when you click on icon from the toolbar.
-
-    To begin the development, run `npm run watch`.
-    To create a production bundle, use `npm run build`.
-  -->
+  <script type="module" src="popup.js"></script>
 </body>
 </html>

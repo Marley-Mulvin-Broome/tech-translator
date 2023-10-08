@@ -16,5 +16,8 @@
     "webpack": "^5.88.2",
     "webpack-cli": "^4.10.0",
     "webpack-merge": "^5.9.0"
+  },
+  "dependencies": {
+    "@types/chrome": "^0.0.246"
   }
 }
