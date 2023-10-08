@@ -17,17 +17,21 @@ const RightQuiz = () => {
   const [inputText, setInputText] = useState('');
   const [chatHistory, setChatHistory] = useState<{ user: string; ai: string }[]>([]);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
-  const userMessage = "User: こんにちは、あなたの名前は何ですか？";
-  const aiResponse = "AI: 私の名前はAIです。どのようにお手伝いできますか？";
-  
-  // OpenAI APIを呼び出して会話を進める場合
-  const conversation = `${userMessage}\n${aiResponse}`;
-  
-  // APIに送信するプロンプト
-  const prompt = conversation;
-  const openaiApiKey = 'REACT_APP_OPENAI_API_KEY'; // OpenAI APIのアクセスキー
 
-  // OpenAI APIを呼び出す関数
+  // OpenAI APIのアクセスキー
+  const openaiApiKey = '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';
+
+  // ユーザーの最初のメッセージ
+  const userMessage = "こんにちは、あなたの名前は何ですか？";
+
+  // 初期のAIの応答
+  const initialAiResponse = "私の名前はAIです。どのようにお手伝いできますか？";
+
+  // チャットが開始された状態
+  const [conversation, setConversation] = useState<{ user: string; ai: string }[]>([
+    { user: userMessage, ai: initialAiResponse },
+  ]);
+
   const callOpenAI = async (userMessage: string) => {
     try {
       const response = await fetch('https://api.openai.com/v1/engines/davinci/completions', {
@@ -37,7 +41,7 @@ const RightQuiz = () => {
           'Authorization': `Bearer ${openaiApiKey}`,
         },
         body: JSON.stringify({
-          prompt,
+          prompt: conversation.map(({ user, ai }) => `${user}\n${ai}`).join('\n') + `\n ${userMessage}\n`,
           max_tokens: 10, // 応答の最大トークン数
         }),
       });
@@ -66,7 +70,11 @@ const RightQuiz = () => {
     // OpenAI APIを呼び出してAIの応答を取得
     const aiResponse = await callOpenAI(userMessage);
 
-    setChatHistory((prevHistory) => [...prevHistory, { user: userMessage, ai: aiResponse }]);
+    // チャット履歴にユーザーとAIのメッセージを追加
+    setConversation((prevConversation) => [
+      ...prevConversation,
+      { user: `User: ${userMessage}`, ai: `AI: ${aiResponse}` },
+    ]);
     setInputText('');
   };
 
@@ -75,7 +83,7 @@ const RightQuiz = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [chatHistory]);
+  }, [conversation]);
 
   return (
     <Container maxWidth="xl" style={{ marginTop: '20px', width: '100%' }}>
@@ -96,7 +104,7 @@ const RightQuiz = () => {
               width: '100%', // チャット画面全体の幅を100%に設定
             }}
           >
-            {chatHistory.map((message, index) => (
+            {conversation.map((message, index) => (
               <Grid container key={index}>
                 <Grid item xs={6}>
                   {message.ai && (
