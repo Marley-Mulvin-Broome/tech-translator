@@ -5,13 +5,24 @@ import HomePage from './components/Home/Homepage';
 import NewsPage from './components/News/NewsPage'; // 最新ニュースページコンポーネントをインポート
 import VocabularyPage from './components/Vocabulary/VocabularyPage'; // 単語管理ページコンポーネントをインポート
 import LearningPage from './components/Learning/LearningPage'; // サイト選択学習ページコンポーネントをインポート
+import { loginRequest } from './server/requests';
+import { setUserToken } from './server/login';
 import CreateFlashcardsPage from './components/Vocabulary/CreateFlashcardsPage';
 import StudyWithFlashcardsPage from './components/Vocabulary/StudyWithFlashcardsPage';
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const handleLogin = (email: string, password: string) => {
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      const { token, refresh_token } = await loginRequest(email, password);
+
+      setUserToken(token, refresh_token);
+      setIsLoggedIn(true);
+    } catch {
+      // TODO: エラー処理
+    }
+
     if (email === 'daikisoccer02@icloud.com' && password === 'unko') {
       setIsLoggedIn(true);
     }

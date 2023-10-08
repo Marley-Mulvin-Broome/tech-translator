@@ -1,5 +1,6 @@
 from uuid import uuid4
 from time import time
+from re import sub as regex_sub
 
 
 def generate_random_file_name(extension: str = "") -> str:
@@ -10,3 +11,7 @@ def generate_random_file_name(extension: str = "") -> str:
 
 def get_current_timestamp() -> int:
     return int(time())
+
+
+def strip_html_tags(text):
+    return regex_sub("<[^<]+?>", "", text)
