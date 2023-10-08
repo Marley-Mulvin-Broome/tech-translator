@@ -1,10 +1,7 @@
 import React from 'react';
 import { CardContainer } from '../../server/models';
-import { getAllCardCollectionsRequest, getAllCardsInCollectionRequest } from '../../server/requests';
-import { getUserToken } from '../../server/login';
 import VocabularyLayout from './VocabularyLayout';
 import DecksView from './DecksView';
-import CenteredCircularProgress from '../shared/CenteredCircularProgress';
 import CardsViews from './CardsView';
 
 const VocabularyPage = () => {
@@ -20,7 +17,6 @@ const VocabularyPage = () => {
 }
 
 export default VocabularyPage;
-
 
 // import { Link } from 'react-router-dom'; 
 // import {
