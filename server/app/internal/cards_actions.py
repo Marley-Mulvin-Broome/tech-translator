@@ -79,6 +79,20 @@ def card_collection_get_all_cards(
     return [card.to_dict() for card in cards_stream]
 
 
+def card_collection_get_all_todo_cards_count(collection_id: str, uid: str, firestore):
+    cards_stream = (
+        firestore.collection("users")
+        .document(uid)
+        .collection(COLLECTION_CONTAINER_NAME)
+        .document(collection_id)
+        .collection("cards")
+        .where("due_timestamp", "<=", get_current_timestamp())
+        .stream()
+    )
+
+    return len([card.to_dict() for card in cards_stream])
+
+
 def card_collection_set_cards(
     collection_id: str, new_cards: list[CardBase], uid: str, firestore
 ):

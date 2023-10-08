@@ -22,7 +22,7 @@ const VocabularyPage: React.FC = () => {
         <Grid container spacing={4} justifyContent="center" style={{ marginTop: '80px' }}>
           <Grid item xs={12} sm={6}>
           <Link to="/create-flashcards" style={{ textDecoration: 'none' }}>
-            <Paper elevation={3} style={{ padding: '20px', textAlign: 'center' }}>
+            <Paper elevation={3} sx={{ ':hover': { boxShadow: 20 } }} style={{ padding: '20px', textAlign: 'center' }}>
               <Box display="flex" justifyContent="center" alignItems="center" height="120px">
                   <IconButton
                     color="primary"
@@ -44,7 +44,7 @@ const VocabularyPage: React.FC = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
           <Link to="/study-with-flashcards" style={{ textDecoration: 'none' }}>
-            <Paper elevation={3} style={{ padding: '20px', textAlign: 'center' }}>
+            <Paper elevation={3} sx={{ ':hover': { boxShadow: 20 } }} style={{ padding: '20px', textAlign: 'center' }}>
               <Box display="flex" justifyContent="center" alignItems="center" height="120px">
                   <IconButton
                     color="primary"
