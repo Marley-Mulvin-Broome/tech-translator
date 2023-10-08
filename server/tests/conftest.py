@@ -6,6 +6,8 @@ from app.main import app
 from app.dependencies import validate_token
 from firebase_admin import auth
 
+from tests.utility import signup_request, delete_user_request
+
 from os import environ
 
 
@@ -42,3 +44,18 @@ def test_client():
     app.dependency_overrides[validate_token] = override_validate_token
 
     yield test_client
+
+
+@pytest.fixture(scope="function")
+def user_uid(test_client):
+    response = signup_request(
+        test_client,
+        "potato@potato.com",
+        "password123",
+    )
+
+    assert response.status_code == 200
+
+    yield response.json()["uid"]
+
+    delete_user_request(test_client, response.json()["uid"])

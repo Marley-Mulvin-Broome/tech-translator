@@ -10,6 +10,8 @@ from httpx import Response
 
 from app.models.tango import TangoCardModel, CreateTangoModel
 from app.models.sentence import CreateSentenceModel, SentenceCardModel
+from app.models.speak import SpeakRequest
+from app.models.rss import RssFetchRequest
 
 
 def make_authenticated_request(
@@ -185,4 +187,36 @@ def delete_card_request(
         f"/cards/delete_card/{collection_id}/{card_id}",
         uid,
         "delete",
+    )
+
+
+def speak_text_request(
+    test_client: TestClient, uid: str, speak_request: SpeakRequest
+) -> Response:
+    return make_authenticated_request(
+        test_client,
+        "/speak",
+        uid,
+        "post",
+        json=speak_request.model_dump(mode="json"),
+    )
+
+
+def get_rss_request(
+    test_client: TestClient, uid: str, rss_fetch_request: RssFetchRequest
+) -> Response:
+    return make_authenticated_request(
+        test_client,
+        "/rss",
+        uid,
+        "post",
+        json=rss_fetch_request.model_dump(mode="json"),
+    )
+
+
+def get_all_cards_in_collection_request(
+    test_client: TestClient, uid: str, collection_id: str
+) -> Response:
+    return make_authenticated_request(
+        test_client, f"/cards/{collection_id}/cards", uid, "get"
     )

@@ -80,13 +80,13 @@ def login(
 
 @user_router.post("/refresh")
 def refresh(
-    firebase_login_auth: FirebaseAuthDep, refresh_token: str = Header()
+    firebase_login_auth: FirebaseAuthDep, x_refresh_token: str = Header()
 ) -> UserLoginResponse:
     """
     ログインAPI
     """
     try:
-        user = firebase_login_auth.refresh(refresh_token)
+        user = firebase_login_auth.refresh(x_refresh_token)
 
         return UserLoginResponse(
             token=user["idToken"], refresh_token=user["refreshToken"]

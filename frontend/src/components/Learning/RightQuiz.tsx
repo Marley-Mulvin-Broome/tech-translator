@@ -1,169 +1,148 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import { Container, Typography, Button, RadioGroup, FormControlLabel, Radio, LinearProgress } from '@mui/material';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Avatar,
+  Box,
+  Container,
+  Grid,
+  IconButton,
+  Paper,
+  TextField,
+  Typography,
+} from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import UserIcon from '@mui/icons-material/AccountCircle'; // ユーザーアイコン
+import AiIcon from '@mui/icons-material/Android'; // AIアイコン
 
-interface Choice {
-  text: string;
-}
+const RightQuiz = () => {
+  const [inputText, setInputText] = useState('');
+  const [chatHistory, setChatHistory] = useState<{ user: string; ai: string }[]>([]);
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  const userMessage = "User: こんにちは、あなたの名前は何ですか？";
+  const aiResponse = "AI: 私の名前はAIです。どのようにお手伝いできますか？";
+  
+  // OpenAI APIを呼び出して会話を進める場合
+  const conversation = `${userMessage}\n${aiResponse}`;
+  
+  // APIに送信するプロンプト
+  const prompt = conversation;
+  const openaiApiKey = 'REACT_APP_OPENAI_API_KEY'; // OpenAI APIのアクセスキー
 
-const RightQuiz: React.FC = () => {
-  const [question, setQuestion] = useState<string>('');
-  const [answerOptions, setAnswerOptions] = useState<string[]>([]);
-  const [correctAnswer, setCorrectAnswer] = useState<string>('');
-  const [selectedAnswer, setSelectedAnswer] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [initialLoad, setInitialLoad] = useState<boolean>(true);
-  const [showResult, setShowResult] = useState<boolean>(false);
-  const [isCorrect, setIsCorrect] = useState<boolean>(false);
-
-  const generateQuestion = async () => {
-    setLoading(true);
+  // OpenAI APIを呼び出す関数
+  const callOpenAI = async (userMessage: string) => {
     try {
-      const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
-      const prompt = 'Generate a quiz question:';
-
       const response = await fetch('https://api.openai.com/v1/engines/davinci/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
+          'Authorization': `Bearer ${openaiApiKey}`,
         },
         body: JSON.stringify({
-          prompt, // プロンプトを指定
-          max_tokens: 30, // 最大トークン数を調整
-          temperature: 0.7, // ランダム性を調整
+          prompt,
+          max_tokens: 10, // 応答の最大トークン数
         }),
       });
 
-      const data = await response.json();
-      if (data.choices[0] && data.choices[0].text) {
-        setQuestion(data.choices[0].text);
-
-        // 正しい回答を取得
-        const correctAnswerResponse = await fetch('https://api.openai.com/v1/engines/davinci/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            prompt: `What is the answer to this question: ${data.choices[0].text}`,
-            max_tokens: 10,
-            temperature: 0.7,
-          }),
-        });
-        const correctAnswerData = await correctAnswerResponse.json();
-        const correctAnswerText = correctAnswerData.choices[0]?.text || 'No answer found';
-
-        setCorrectAnswer(correctAnswerText);
-
-        // 回答選択肢を生成
-        const answerOptionsResponse = await fetch('https://api.openai.com/v1/engines/davinci/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            prompt: `Generate answer choices for this question: ${data.choices[0].text}`,
-            max_tokens: 30,
-            temperature: 0.7,
-          }),
-        });
-        const answerOptionsData = await answerOptionsResponse.json();
-        const answerOptionsList = answerOptionsData.choices.map((choice: Choice) => choice.text);
-
-        setAnswerOptions(answerOptionsList);
-
-        setSelectedAnswer('');
-        setShowResult(false);
-        setIsCorrect(false);
-      } else {
-        console.error('問題の生成に失敗しました:', data);
+      if (!response.ok) {
+        throw new Error('OpenAI API request failed');
       }
+
+      const data = await response.json();
+      return data.choices[0].text; // APIからの応答テキストを取得
     } catch (error) {
-      console.error('問題の生成に失敗しました:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error calling OpenAI API:', error);
+      return 'AI response error';
     }
   };
 
-  const handleAnswerChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSelectedAnswer(event.target.value);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputText(e.target.value);
   };
 
-  const handleCheckAnswer = () => {
-    setShowResult(true);
-    if (selectedAnswer === correctAnswer) {
-      setIsCorrect(true);
-    }
+  const handleSend = async () => {
+    if (inputText.trim() === '') return;
+
+    const userMessage = inputText;
+
+    // OpenAI APIを呼び出してAIの応答を取得
+    const aiResponse = await callOpenAI(userMessage);
+
+    setChatHistory((prevHistory) => [...prevHistory, { user: userMessage, ai: aiResponse }]);
+    setInputText('');
   };
 
-  const handleGenerateQuestion = () => {
-    setInitialLoad(false);
-    generateQuestion();
-  };
-
+  // チャットが更新されたら自動的にスクロール
   useEffect(() => {
-    if (!initialLoad) {
-      // 初回のレンダリング時以外に問題を生成
-      generateQuestion();
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [initialLoad]);
+  }, [chatHistory]);
 
   return (
-    <Container maxWidth="sm">
-      <Typography variant="h5" align="center" gutterBottom>
-        問題
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        以下の問題に回答してください：
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        {question}
-      </Typography>
-      <RadioGroup value={selectedAnswer} onChange={handleAnswerChange}>
-        {answerOptions.map((option, index) => (
-          <FormControlLabel
-            key={index}
-            value={option}
-            control={<Radio color="primary" />}
-            label={option}
-            labelPlacement="end"
+    <Container maxWidth="xl" style={{ marginTop: '20px', width: '100%' }}>
+        <Typography variant="h5">Chat with kAI</Typography>
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="flex-start"
+          alignItems="flex-start"
+          mt={2}
+        >
+          <div
+            ref={chatContainerRef}
+            style={{
+              overflowY: 'auto',
+              maxHeight: '180px', // チャットコンテナの最大高さ
+              marginBottom: '20px',
+              width: '100%', // チャット画面全体の幅を100%に設定
+            }}
+          >
+            {chatHistory.map((message, index) => (
+              <Grid container key={index}>
+                <Grid item xs={6}>
+                  {message.ai && (
+                    <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start' }}>
+                      <Avatar style={{ marginRight: '4px', width: '24px', height: '24px' }}>
+                        <AiIcon fontSize="small" />
+                      </Avatar>
+                      <Typography variant="body1" paragraph style={{ textAlign: 'left' }}>
+                        {message.ai}
+                      </Typography>
+                    </div>
+                  )}
+                </Grid>
+                <Grid item xs={6}>
+                  {message.user && (
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                      <Typography variant="body1" paragraph style={{ textAlign: 'right' }}>
+                        {message.user}
+                      </Typography>
+                      <Avatar style={{ marginLeft: '4px', width: '24px', height: '24px' }}>
+                        <UserIcon fontSize="small" />
+                      </Avatar>
+                    </div>
+                  )}
+                </Grid>
+              </Grid>
+            ))}
+          </div>
+        </Box>
+        <Box display="flex" alignItems="center" mt={2}>
+          <TextField
+            fullWidth
+            label="Type a message..."
+            variant="outlined"
+            value={inputText}
+            onChange={handleInputChange}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleSend();
+              }
+            }}
           />
-        ))}
-      </RadioGroup>
-      {!initialLoad && !showResult && (
-        <Button variant="contained" color="primary" onClick={handleCheckAnswer}>
-          回答を確認
-        </Button>
-      )}
-      {!showResult && (
-        <Button variant="contained" color="primary" onClick={handleGenerateQuestion}>
-          問題を解く
-        </Button>
-      )}
-      {showResult && (
-        <div>
-          {isCorrect ? (
-            <Typography variant="body1" color="primary" gutterBottom>
-              正解です！
-            </Typography>
-          ) : (
-            <Typography variant="body1" color="error" gutterBottom>
-              不正解です。
-            </Typography>
-          )}
-          <LinearProgress
-            variant="determinate"
-            value={isCorrect ? 100 : 0}
-          />
-        </div>
-      )}
-      {loading && (
-        <Typography variant="body1" align="center" gutterBottom>
-          問題を生成中...
-        </Typography>
-      )}
+          <IconButton color="primary" aria-label="send" onClick={handleSend}>
+            <SendIcon />
+          </IconButton>
+        </Box>
     </Container>
   );
 };

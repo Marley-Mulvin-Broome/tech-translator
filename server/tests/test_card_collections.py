@@ -10,12 +10,11 @@ from tests.utility import (
     get_sentence_card_request,
     add_sentence_card_to_collection_request,
     add_tango_card_to_collection_request,
-    set_tango_card_request,
-    set_sentence_card_request,
     delete_card_collection_request,
     update_card_field_request,
     update_card_collection_field_request,
     delete_card_request,
+    get_all_cards_in_collection_request,
 )
 
 from app.models.cardbase import (
@@ -28,21 +27,6 @@ from app.models.tango import TangoCardModel, CreateTangoModel
 from app.models.sentence import SentenceCardModel, CreateSentenceModel
 
 from time import time
-
-
-@pytest.fixture(scope="function")
-def user_uid(test_client):
-    response = signup_request(
-        test_client,
-        "potato@potato.com",
-        "password123",
-    )
-
-    assert response.status_code == 200
-
-    yield response.json()["uid"]
-
-    delete_user_request(test_client, response.json()["uid"])
 
 
 @pytest.fixture(scope="function")
@@ -578,3 +562,89 @@ def test_delete_card(test_client, user_uid, tango_collection_id):
     )
 
     assert delete_card_response.status_code == 200
+
+
+def test_get_all_cards_in_tango_collection(test_client, user_uid, tango_collection_id):
+    # empty
+    all_cards_response = get_all_cards_in_collection_request(
+        test_client, user_uid, tango_collection_id
+    )
+
+    assert all_cards_response.status_code == 200
+
+    all_cards_response_json = all_cards_response.json()
+
+    assert len(all_cards_response_json) == 0
+
+    # add card
+    card_response = add_tango_card_to_collection_request(
+        test_client,
+        user_uid,
+        tango_collection_id,
+        CreateTangoModel(
+            english="english",
+            japanese="japanese",
+            pronunciation="pronunciation",
+            example_sentence_english="example_sentence_english",
+            example_sentence_japanese="example_sentence_japanese",
+            url="url",
+        ),
+    )
+
+    assert card_response.status_code == 200
+
+    all_cards_response = get_all_cards_in_collection_request(
+        test_client, user_uid, tango_collection_id
+    )
+
+    assert all_cards_response.status_code == 200
+
+    all_cards = []
+
+    for card_json in all_cards_response.json():
+        all_cards.append(TangoCardModel(**card_json))
+
+    assert len(all_cards) == 1
+
+
+def test_get_all_cards_in_sentence_collection(
+    test_client, user_uid, sentence_collection_id
+):
+    # empty
+    all_cards_response = get_all_cards_in_collection_request(
+        test_client, user_uid, sentence_collection_id
+    )
+
+    assert all_cards_response.status_code == 200
+
+    all_cards_response_json = all_cards_response.json()
+
+    assert len(all_cards_response_json) == 0
+
+    # add card
+    card_response = add_sentence_card_to_collection_request(
+        test_client,
+        user_uid,
+        sentence_collection_id,
+        CreateSentenceModel(
+            english="english",
+            japanese="japanese",
+            explanation="explanation",
+            url="url",
+        ),
+    )
+
+    assert card_response.status_code == 200
+
+    all_cards_response = get_all_cards_in_collection_request(
+        test_client, user_uid, sentence_collection_id
+    )
+
+    assert all_cards_response.status_code == 200
+
+    all_cards = []
+
+    for card_json in all_cards_response.json():
+        all_cards.append(SentenceCardModel(**card_json))
+
+    assert len(all_cards) == 1
