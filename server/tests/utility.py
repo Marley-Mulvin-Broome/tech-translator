@@ -212,3 +212,11 @@ def get_rss_request(
         "post",
         json=rss_fetch_request.model_dump(mode="json"),
     )
+
+
+def get_all_cards_in_collection_request(
+    test_client: TestClient, uid: str, collection_id: str
+) -> Response:
+    return make_authenticated_request(
+        test_client, f"/cards/{collection_id}/cards", uid, "get"
+    )

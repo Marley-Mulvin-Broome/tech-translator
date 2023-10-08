@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from app.internal.util import strip_html_tags
 
 
 class RssFetchRequest(BaseModel):
@@ -16,9 +17,9 @@ class RssFeedModel(BaseModel):
     @staticmethod
     def from_entry(entry):
         return RssFeedModel(
-            title=entry.title,
+            title=strip_html_tags(entry.title),
             link=entry.link,
-            description=entry.description,
+            description=strip_html_tags(entry.description),
             published=entry.published,
             tags=[tag.term for tag in entry.tags],
         )

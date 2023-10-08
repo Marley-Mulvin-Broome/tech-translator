@@ -19,6 +19,7 @@ from app.internal.cards_actions import (
     card_collection_add_card,
     card_collection_get_card,
     card_collection_set_card,
+    card_collection_get_all_cards,
     construct_tango_card,
     construct_sentence_card,
 )
@@ -96,6 +97,17 @@ def get_collection_with_id(
     uid = validate_token["user"].get("uid", None)
 
     return card_collection_get(card_collection_id, uid, firestore)
+
+
+@cards_router.get("/{card_collection_id}/cards")
+def get_all_cards_in_collection_with_id(
+    card_collection_id: str,
+    validate_token: ValidateTokenDep,
+    firestore=Depends(get_firestore),
+) -> list[TangoCardModel | SentenceCardModel]:
+    uid = validate_token["user"].get("uid", None)
+
+    return card_collection_get_all_cards(card_collection_id, uid, firestore)
 
 
 @cards_router.post("/create_card_collection")

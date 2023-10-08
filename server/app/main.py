@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.routers.users import user_router
 from app.routers.cards import cards_router
 from app.routers.jisho import jisho_router
@@ -11,8 +12,23 @@ from firebase_admin import initialize_app as firebase_initialize_app, credential
 
 settings = get_settings()
 
+origins = [
+    "http://localhost",
+    "https://localhost",
+    "http://localhost:3000",
+    "https://localhost:3000",
+]
+
 app = FastAPI(
     title=settings.app_name,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
