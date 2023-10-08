@@ -11,10 +11,35 @@ chrome.runtime.onInstalled.addListener(function(){
     contexts: ["selection"],
   });
 });
+
+// メッセージを受け取った時の処理
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.action === "showPopup") {
+    const selectedText = request.selectedText;
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+      if (selectedText) {
+        const activeTab = tabs[0];
+        const tabUrl = activeTab.url;
+
+        // ポップアップを表示
+        chrome.windows.create({
+          url: "save_word.html?english=" + encodeURIComponent(selectedText) + "&url=" + tabUrl,
+          type: "popup",
+          width: 400,
+          height: 300,
+          left: 500,
+          top: 300
+        });
+      }
+    });
+  }
+});
+
+// コンテキストメニューがクリックされた時の処理
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
   console.log(tab);
   if (info.menuItemId === "saveWord") {
-    let word = info.selectionText;  // 選択文字列を取得する
+    let word = info.selectionText;
     chrome.windows.create({
       url: "save_word.html?english=" + encodeURIComponent(word) + "&url=" + tab.url,
       type: "popup",
@@ -22,21 +47,6 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
       height: 300, 
       left: 500,
       top: 300
-    });
-  }
-});
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'GREETINGS') {
-    const message = `Hi ${
-      sender.tab ? 'Con' : 'Pop'
-    }, my name is Bac. I am from Background. It's great to hear from you.`;
-
-    // Log message coming from the `request` parameter
-    console.log(request.payload.message);
-    // Send a response message
-    sendResponse({
-      message,
     });
   }
 });

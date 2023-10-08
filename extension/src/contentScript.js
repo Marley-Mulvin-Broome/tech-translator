@@ -31,13 +31,44 @@ chrome.runtime.sendMessage(
 );
 
 // Listen for message
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'COUNT') {
-    console.log(`Current count is ${request.payload.count}`);
-  }
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.action === "getSelectedTextAndUrl") {
+      const selectedText = window.getSelection().toString();
+      const tabUrl = sender.tab.url;
 
-  // Send an empty response
-  // See https://github.com/mozilla/webextension-polyfill/issues/130#issuecomment-531531890
-  sendResponse({});
-  return true;
+      sendResponse({ selectedText: selectedText, tabUrl: tabUrl });
+  }
+});
+// コンテンツスクリプト
+
+function contentScriptClickHandler(e) {
+  if (!e.ctrlKey)
+  {
+    return;
+  }
+  const selectedText = window.getSelection().toString();
+  console.log(selectedText);
+  chrome.runtime.sendMessage({ action: "showPopup", selectedText: selectedText });
+}
+
+document.addEventListener('keydown', function(event) {
+  const isCtrlPressed = event.ctrlKey;
+  const isShiftPressed = event.shiftKey;
+  const isAltPressed = event.altKey;
+
+  if (isCtrlPressed && isShiftPressed && isAltPressed) {
+    const selectedText = window.getSelection().toString();
+    console.log(selectedText);
+    chrome.runtime.sendMessage({ action: "showPopup", selectedText: selectedText });
+  }
+});
+
+document.addEventListener("click", function(e) {
+  if (!e.ctrlKey)
+  {
+    return;
+  }
+  const selectedText = window.getSelection().toString();
+  console.log(selectedText);
+  chrome.runtime.sendMessage({ action: "showPopup", selectedText: selectedText });
 });
