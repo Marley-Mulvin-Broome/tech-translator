@@ -164,11 +164,11 @@ export const getTangoCardRequest = async (token: string, collectionId: string, c
   return makeAuthenticatedRequest(`cards/tango_card_get/${collectionId}/${cardId}`, token, {}, undefined, undefined, 'GET') as Promise<TangoCard>;
 };
 
-export const setTangoCardRequest = async (token: string, collectionId: string, cardId: string, newCard: TangoCard) => {
-  return makeAuthenticatedRequest(`cards/tango_card_set/${collectionId}`, token, {}, undefined, newCard, 'PATCH') as Promise<TangoCard>;
+export const setTangoCardRequest = async (token: string, collectionId: string, newCard: TangoCard) => {
+  return makeAuthenticatedRequest(`cards/tango_card_set/${collectionId}`, token, {}, undefined, newCard, 'PATCH');
 };
 
-export const setSentenceCardRequest = async (token: string, collectionId: string, cardId: string, newCard: SentenceCard) => {
+export const setSentenceCardRequest = async (token: string, collectionId: string, newCard: SentenceCard) => {
   return makeAuthenticatedRequest(`cards/sentence_card_set/${collectionId}`, token, {}, undefined, newCard, 'PATCH') as Promise<SentenceCard>;
 };
 
@@ -202,6 +202,10 @@ export const deleteCardCollectionRequest = async (token: string, collectionId: s
 
 export const deleteCardRequest = async (token: string, collectionId: string, cardId: string) => {
   return makeAuthenticatedRequest(`cards/delete_card/${collectionId}/${cardId}`, token, {}, undefined, undefined, 'DELETE') as Promise<OkResponse>;
+};
+
+export const getAllTodoCardsCountInCollectionRequest = async (token: string, collectionId: string) => {
+  return makeAuthenticatedRequest(`cards/${collectionId}/todo_count`, token, {}, undefined, undefined, 'GET') as Promise<number>;
 };
 
 export const getRssRequest = async (token: string, request: RssFetchRequest) => {
