@@ -33,9 +33,9 @@ const Homepage = () => {
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={4} onClick={handleNewsClick}> 
-            <Paper elevation={3} style={{ padding: '20px', backgroundColor: '#FF8C00', height: '100%' }}>
+            <Paper elevation={3} sx={{':hover': { boxShadow: 20, }}} style={{ cursor: "pointer", padding: '20px', backgroundColor: '#FF8C00', height: '100%' }}>
             <InfoOutlined style={{ fontSize: 50, color: '#fff', marginBottom: '20px' }} /> 
-            <Typography variant="h5" align="center" gutterBottom style={{ color: '#fff', fontWeight: 'bold', fontFamily: 'Arial, sans-serif' }}>
+            <Typography variant="h5" align="center" gutterBottom style={{color: '#fff', fontWeight: 'bold', fontFamily: 'Arial, sans-serif' }}>
                 Latest News
             </Typography>
             <Typography variant="subtitle2" align="center" style={{ color: '#fff' }}>
@@ -44,7 +44,7 @@ const Homepage = () => {
             </Paper>
         </Grid>
         <Grid item xs={12} sm={4} onClick={handleVocabularyClick}> 
-            <Paper elevation={3} style={{ padding: '20px', backgroundColor: '#4CAF50', height: '100%' }}>
+            <Paper elevation={3} sx={{':hover': { boxShadow: 20, }}} style={{ cursor: "pointer", padding: '20px', backgroundColor: '#4CAF50', height: '100%' }}>
             <LibraryBooksOutlined style={{ fontSize: 50, color: '#fff', marginBottom: '20px' }} /> 
             <Typography variant="h5" align="center" gutterBottom style={{ color: '#fff', fontWeight: 'bold', fontFamily: 'Arial, sans-serif' }}>
                 Vocabulary Management
@@ -55,7 +55,7 @@ const Homepage = () => {
             </Paper>
         </Grid>
         <Grid item xs={12} sm={4} onClick={handleLearningClick}>
-            <Paper elevation={3} style={{ padding: '20px', backgroundColor: '#2196F3', height: '100%' }}>
+            <Paper elevation={3} sx={{':hover': { boxShadow: 20, }}} style={{ cursor: "pointer", padding: '20px', backgroundColor: '#2196F3', height: '100%' }}>
             <SchoolOutlined style={{ fontSize: 50, color: '#fff', marginBottom: '20px' }} /> 
             <Typography variant="h5" align="center" gutterBottom style={{ color: '#fff', fontWeight: 'bold', fontFamily: 'Arial, sans-serif' }}>
                 Site Selection Learning

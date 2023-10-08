@@ -11,9 +11,9 @@ const Login: React.FC<LoginProps> = ({ onSubmit }) => {
   const [rememberMe, setRememberMe] = useState(false);
 
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(email, password, rememberMe);
+    await onSubmit(email, password, rememberMe);
   };
 
   return (
