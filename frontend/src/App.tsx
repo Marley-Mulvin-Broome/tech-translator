@@ -7,6 +7,8 @@ import VocabularyPage from './components/Vocabulary/VocabularyPage'; // 単語�
 import LearningPage from './components/Learning/LearningPage'; // サイト選択学習ページコンポーネントをインポート
 import { loginRequest } from './server/requests';
 import { setUserToken } from './server/login';
+import CreateFlashcardsPage from './components/Vocabulary/CreateFlashcardsPage';
+import StudyWithFlashcardsPage from './components/Vocabulary/StudyWithFlashcardsPage';
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -35,6 +37,8 @@ const App: React.FC = () => {
         <Route path="/news" element={<NewsPage />} />
         <Route path="/vocabulary" element={<VocabularyPage />} />
         <Route path="/learning" element={<LearningPage />} />
+        <Route path="/create-flashcards" element={<CreateFlashcardsPage />} />
+        <Route path="/study-with-flashcards" element={<StudyWithFlashcardsPage />} />
       </Routes>
     </Router>
   );
