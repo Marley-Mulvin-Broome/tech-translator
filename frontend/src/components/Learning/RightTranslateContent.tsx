@@ -15,7 +15,7 @@ const RightTranslateContent: React.FC = () => {
     setLoading(true);
 
     try {
-        const apiKey = process.env.REACT_APP_GOOGLE_TRANSLATE_API_KEY;
+        const apiKey = "AIzaSyCtPTtuwdVpIu9j41wYJv4AO2K1uqbDeqY";
         const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
         method: 'POST',
         headers: {
@@ -43,15 +43,15 @@ const RightTranslateContent: React.FC = () => {
 
   return (
     <Container maxWidth="sm">
-      <Paper elevation={3} style={{ padding: '20px', backgroundColor: 'white', minHeight: '300px', textAlign: 'center' }}>
-        <Typography variant="h5" align="center" gutterBottom>
+      <Paper elevation={3} style={{ padding: '20px', backgroundColor: 'white', minHeight: '200px', textAlign: 'center' }}>
+        <Typography variant="h4" align="center" gutterBottom>
           English to Japanese Translation
         </Typography>
         <TextField
           label="英文を入力してください"
           variant="outlined"
           fullWidth
-          rows={8}
+          rows={3}
           multiline
           value={sourceText}
           onChange={(e) => setSourceText(e.target.value)}

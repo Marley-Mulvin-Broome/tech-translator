@@ -79,7 +79,7 @@ const RightQuiz = () => {
 
   return (
     <Container maxWidth="xl" style={{ marginTop: '20px', width: '100%' }}>
-        <Typography variant="h5">Chat with kAI</Typography>
+        <Typography variant="h4" textAlign={"center"}>Chat with AI</Typography>
         <Box
           display="flex"
           flexDirection="column"
@@ -91,13 +91,13 @@ const RightQuiz = () => {
             ref={chatContainerRef}
             style={{
               overflowY: 'auto',
-              maxHeight: '180px', // チャットコンテナの最大高さ
+              height: '220px', // チャットコンテナの最大高さ
               marginBottom: '20px',
               width: '100%', // チャット画面全体の幅を100%に設定
             }}
           >
             {chatHistory.map((message, index) => (
-              <Grid container key={index}>
+              <Grid container key={index} >
                 <Grid item xs={6}>
                   {message.ai && (
                     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start' }}>
