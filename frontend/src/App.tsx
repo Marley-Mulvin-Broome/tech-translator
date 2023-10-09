@@ -5,7 +5,7 @@ import HomePage from './components/Home/Homepage';
 import NewsPage from './components/News/NewsPage'; // 最新ニュースページコンポーネントをインポート
 import VocabularyPage from './components/Vocabulary/VocabularyPage'; // 単語管理ページコンポーネントをインポート
 import LearningPage from './components/Learning/LearningPage'; // サイト選択学習ページコンポーネントをインポート
-import { loginRequest } from './server/requests';
+import { loginRequest, refreshAccessToken } from './server/requests';
 import { setUserToken } from './server/login';
 import CreateFlashcardsPage from './components/Vocabulary/CreateFlashcardsPage';
 import StudyWithFlashcardsPage from './components/Vocabulary/StudyWithFlashcardsPage';
@@ -19,6 +19,19 @@ const App: React.FC = () => {
 
       setUserToken(token, refresh_token);
       setIsLoggedIn(true);
+
+      if (window.sessionStorage.getItem('refreshInterval') === null) {
+        window.sessionStorage.setItem('refreshInterval', 'true');
+        setInterval(async () => {
+          const tokens = await refreshAccessToken(refresh_token);
+  
+          setUserToken(tokens.token, tokens.refreshToken);
+  
+          console.log('トークンを更新しました');
+        }, 1000 * 60 * 30);
+      }
+
+      
     } catch {
       // TODO: エラー処理
     }
