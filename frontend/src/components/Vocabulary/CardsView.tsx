@@ -4,6 +4,7 @@ import { getAllCardsInCollectionRequest } from "../../server/requests";
 import { getUserToken } from "../../server/login";
 import CenteredCircularProgress from "../shared/CenteredCircularProgress";
 import { Box, Button, ButtonGroup } from "@mui/material";
+import CardView from "./CardView";
 
 export interface CardsViewProps {
     selectedCollection: CardContainer;
@@ -44,12 +45,10 @@ export default function CardsViews({ selectedCollection, onReturnClick }: CardsV
 
     return (
         <React.Fragment>
-            <Box>
-                {cards.map((card) => {
+            <Box display={'flex'} flexDirection={'column'} gap="10px">
+                {cards.map((card, index) => {
                     return (
-                        <div>
-                            {card.english}
-                        </div>
+                        <CardView key={index}  card={card} />
                     )
                 })}
             </Box>
