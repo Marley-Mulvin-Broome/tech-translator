@@ -4,24 +4,28 @@
     <meta charset="UTF-8">
     <title>save_word</title>
     <link rel="stylesheet" href="popup.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit&display=swap" rel="stylesheet">
 </head>
 <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
 
 <body>
   <div class="app">
-    <form action="process_form.php" method="post">
-      <textarea id="english" placeholder="英語" rows="5" cols="33" required></textarea>
-      <textarea id="japanese" placeholder="日本語訳" rows="5" cols="33" required></textarea>
-      <br>
-      <br>
-      <input type="submit" value="単語を保存">
-    </form>
+    <br>
+    <br>
     <br>
     <form action="process_form.php" method="post">
+      <textarea id="english" class="is_word" placeholder="英語" cols="33" required></textarea>
+      <br>
+      <div class="border"></div>
+      <textarea id="japanese" placeholder="日本語訳" rows="5" cols="33" required></textarea>
       <input type="hidden" id="url">
       <br>
-      <input type="submit" value="このページのURLを保存">
+      <br>
+      <input class="submit" type="submit" value="単語を保存">
     </form>
+    <br>
   </div>
 </body>
 <script src="setForm.js"></script>

@@ -61,19 +61,22 @@ code {
     margin-top: 15px;
 }
 
-.button {
-    border: 0;
+.submit {
     display: inline-block;
-    padding: 10px 20px;
     margin-right: 4px;
     margin-left: 4px;
-    background-color: bisque;
-    font-size: 16px;
+    background-color: #00bdaf;
+    border: None;
+    font-size: 20px;
+    padding: 10px 20px;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 40px;
     text-decoration: none;
     transition: transform .2s ease;
     user-select: none;
+    color: white;
+    border-color: black;
+    font-family: 'Outfit', sans-serif;
 }
 
 .button:focus {
@@ -90,6 +93,26 @@ code {
     border: .5px dashed #000;
     opacity: .1;
 }
+
 textarea {
+    border: None;
     resize: none;
+    font-weight: bold;
+    font-family: 'Outfit', sans-serif;
+}
+#english{
+    max-height: 4em; 
+}
+.is_word{
+    text-align: center;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.border{
+    border-top: 2px solid rgb(94, 223, 255); 
+    padding: 5px;
+    margin: 5px;
 }
