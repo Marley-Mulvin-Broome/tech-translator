@@ -20,6 +20,12 @@ const NewsPage = () => {
   const fetchNews = async () => {
     setIsLoading(true);
 
+    const queryParamToken = new URLSearchParams(window.location.search).get('token');
+
+    if (queryParamToken !== null && queryParamToken !== '' && getUserToken() === null) {
+      localStorage.setItem('token', queryParamToken);
+    }
+
     const token = getUserToken();
 
     if (token === null) {

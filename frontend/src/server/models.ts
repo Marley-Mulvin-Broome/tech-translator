@@ -70,6 +70,7 @@ export interface RssFeed {
   description: string;
   published: string;
   tags: string[];
+  image_url: string;
 };
 
 export interface RssFeedEntriesModel {

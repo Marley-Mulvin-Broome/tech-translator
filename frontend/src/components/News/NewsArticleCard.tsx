@@ -10,7 +10,7 @@ export default function NewsArticleCard(rssFeed: RssFeed) {
                     <CardMedia
                         component="img"
                         height="140"
-                        image="https://mui.com/static/images/cards/contemplative-reptile.jpg"
+                        image={rssFeed.image_url ?? 'https://www.iguanas.co.uk/wp-content/uploads/2018/07/iguanas-logo.png'}
                         alt="green iguana"/>
                 </a>
             </CardActionArea>
