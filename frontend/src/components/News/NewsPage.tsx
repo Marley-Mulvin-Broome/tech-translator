@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { RssFeed, RssFeedEntriesModel } from '../../server/models';
 import { Card, CircularProgress, Container, Grid, LinearProgress, Paper, Typography } from '@mui/material';
 import NewsArticleCard from './NewsArticleCard';
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import NewsHeader from './NewsHeader';
 
 const rssUrls = [
@@ -19,6 +18,12 @@ const NewsPage = () => {
 
   const fetchNews = async () => {
     setIsLoading(true);
+
+    const searchParamsToken = new URLSearchParams(window.location.search).get('token');
+
+    if (searchParamsToken !== null) {
+      localStorage.setItem('token', searchParamsToken);
+    }
 
     const token = getUserToken();
 
