@@ -10,11 +10,12 @@ async function getJSON(filename) {
         xhr.send();
     });
 }
+const form_len = 33;
 document.addEventListener("DOMContentLoaded", async function() {
     const API_KEY = '9212ce1d-b4d5-80f0-ac2d-d9f04cfff1b4:fx';
     const API_URL = 'https://api-free.deepl.com/v2/translate';
     const urlParams = new URLSearchParams(window.location.search);
-    const english = urlParams.get("english").replace(/^\s+|\s+$/g, "").replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase();
+    const english = urlParams.get("english").replace(/^\s+|\s+$/g, "").toLowerCase();
     let content = encodeURI('auth_key=' + API_KEY + '&text=' + english + '&source_lang=EN&target_lang=JA');
     let url = API_URL + '?' + content;
     const path = '../ejdict.json';
@@ -25,6 +26,10 @@ document.addEventListener("DOMContentLoaded", async function() {
         const jsonData = JSON.parse(data);
         let foundValue;
 
+        if (english.length >= 33)
+        {
+            document.getElementById("english").classList.remove("is_word");
+        }
         document.getElementById("english").value = english;
         foundValue = jsonData[english];
         if (foundValue) {

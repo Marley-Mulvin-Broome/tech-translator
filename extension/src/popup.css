@@ -65,7 +65,8 @@ code {
     display: inline-block;
     margin-right: 4px;
     margin-left: 4px;
-    background-color: #55fff4;
+    background-color: #00bdaf;
+    border: None;
     font-size: 20px;
     padding: 10px 20px;
     cursor: pointer;
@@ -75,6 +76,7 @@ code {
     user-select: none;
     color: white;
     border-color: black;
+    font-family: 'Outfit', sans-serif;
 }
 
 .button:focus {
@@ -95,11 +97,14 @@ code {
 textarea {
     border: None;
     resize: none;
-    text-align: center;
     font-weight: bold;
+    font-family: 'Outfit', sans-serif;
 }
 #english{
     max-height: 4em; 
+}
+.is_word{
+    text-align: center;
 }
 
 button:hover {
