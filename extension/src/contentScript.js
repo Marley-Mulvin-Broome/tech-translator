@@ -64,11 +64,13 @@ document.addEventListener('keydown', function(event) {
 });
 
 document.addEventListener("click", function(e) {
-  if (!e.ctrlKey)
+  console.log(e.ctrlKey || e.metaKey);
+  console.log(e.ctrlKey);
+  console.log(e.metaKey);
+  if ((e.ctrlKey || e.metaKey))
   {
-    return;
+    const selectedText = window.getSelection().toString();
+    console.log(selectedText);
+    chrome.runtime.sendMessage({ action: "showPopup", selectedText: selectedText });
   }
-  const selectedText = window.getSelection().toString();
-  console.log(selectedText);
-  chrome.runtime.sendMessage({ action: "showPopup", selectedText: selectedText });
 });

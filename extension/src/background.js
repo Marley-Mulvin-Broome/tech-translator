@@ -25,8 +25,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         chrome.windows.create({
           url: "save_word.html?english=" + encodeURIComponent(selectedText) + "&url=" + tabUrl,
           type: "popup",
-          width: 400,
-          height: 300,
+          width: 350,
+          height: 500,
           left: 500,
           top: 300
         });
@@ -43,8 +43,8 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
     chrome.windows.create({
       url: "save_word.html?english=" + encodeURIComponent(word) + "&url=" + tab.url,
       type: "popup",
-      width: 400,
-      height: 300, 
+      width: 350,
+      height: 500, 
       left: 500,
       top: 300
     });
